@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我在古代修礼记 · 五维礼心测试</title>
+<style>
+  :root{
+    --paper:#f4eee1; --paper2:#efe7d6; --ink:#2b2b2b; --ink-light:#6b5b4a;
+    --red:#a33;
+    --dianzhang:#8b5e3c; --riyong:#6b8e5a; --jingcheng:#c9a227; --renhe:#b5563a; --chuanwen:#4a6fa5;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"KaiTi","STKaiti","楷体","Songti SC",serif;
+    background:var(--paper); color:var(--ink); line-height:1.8;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,.5), transparent 55%),
+      radial-gradient(circle at 85% 90%, rgba(201,162,39,.08), transparent 55%);
+    min-height:100vh;
+  }
+  a{cursor:pointer; text-decoration:none; color:inherit;}
+
+  /* ========== 导航 ========== */
+  .nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(244,238,225,.92); backdrop-filter:blur(6px);
+    border-bottom:1px solid rgba(43,43,43,.12);
+  }
+  .nav-inner{
+    max-width:960px; margin:0 auto; padding:14px 20px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+  .brand{font-size:1.1rem; letter-spacing:.12em; font-weight:bold; cursor:pointer;}
+  .nav nav{display:flex; gap:6px; flex-wrap:wrap;}
+  .nav nav a{
+    padding:6px 14px; font-size:.95rem; letter-spacing:.06em;
+    border:1px solid transparent; border-radius:2px; transition:.2s;
+  }
+  .nav nav a:hover{border-color:rgba(163,51,51,.4); color:var(--red);}
+  .nav nav a.active{color:var(--red); border-color:var(--red);}
+
+  /* ========== 页面容器 ========== */
+  main{max-width:960px; margin:0 auto; padding:30px 20px 80px;}
+  .page{display:none; animation:fade .45s ease;}
+  .page.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
+
+  /* ========== 首页 ========== */
+  .hero{text-align:center; padding:40px 10px 30px;}
+  .hero h1{font-size:2.4rem; letter-spacing:.2em; margin-bottom:.4em;}
+  .hero .sub{font-size:1.05rem; color:var(--ink-light); margin-bottom:1.8em;}
+  .hero .daily{
+    display:inline-block; padding:14px 26px; border-left:3px solid var(--gold);
+    background:rgba(255,255,255,.4); font-size:1rem; color:var(--ink-light);
+    margin-bottom:2em; max-width:560px; text-align:left;
+  }
+  .btn{
+    display:inline-block; padding:12px 36px; border:1.5px solid var(--ink);
+    background:transparent; color:var(--ink); font-family:inherit; font-size:1.05rem;
+    letter-spacing:.15em; cursor:pointer; transition:.25s; border-radius:2px;
+  }
+  .btn:hover{background:var(--ink); color:var(--paper);}
+  .btn.red{border-color:var(--red); color:var(--red);}
+  .btn.red:hover{background:var(--red); color:#fff;}
+  .hint{font-size:.82rem; color:#8a7a68; margin-top:1.4em;}
+
+  .dim-cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-top:40px;}
+  .dim-card{
+    padding:18px; border:1px solid rgba(43,43,43,.15); background:rgba(255,255,255,.35);
+    border-top-width:4px; border-radius:2px; text-align:left;
+  }
+  .dim-card h3{font-size:1.1rem; margin-bottom:.4em; letter-spacing:.1em;}
+  .dim-card p{font-size:.85rem; color:var(--ink-light); line-height:1.7;}
+
+  /* ========== 测试 ========== */
+  .quiz-wrap{max-width:620px; margin:0 auto;}
+  .quiz-cover{text-align:center; padding:60px 10px;}
+  .quiz-cover h2{font-size:1.8rem; letter-spacing:.18em; margin-bottom:.5em;}
+  .quiz-cover p{color:var(--ink-light); margin-bottom:2em;}
+  .progress{height:4px; background:rgba(43,43,43,.12); margin-bottom:2em; border-radius:2px; overflow:hidden;}
+  .progress-bar{height:100%; width:0; background:var(--red); transition:width .3s;}
+  .q-num{font-size:.8rem; color:#8a7a68; margin-bottom:1em; letter-spacing:.1em;}
+  .question{font-size:1.15rem; line-height:1.9; margin-bottom:1.8em; text-align:left;}
+  .option{
+    display:block; width:100%; text-align:left; padding:14px 18px; margin-bottom:12px;
+    border:1px solid rgba(43,43,43,.25); background:rgba(255,255,255,.35);
+    font-family:inherit; font-size:1rem; line-height:1.7; color:var(--ink);
+    cursor:pointer; transition:.2s; border-radius:2px;
+  }
+  .option:hover{border-color:var(--red); background:rgba(163,51,51,.06);}
+  .option .key{color:var(--red); margin-right:8px; font-weight:bold;}
+
+  /* ========== 结果 ========== */
+  .result-wrap{max-width:620px; margin:0 auto; text-align:center;}
+  .result-type{font-size:1.9rem; letter-spacing:.15em; margin-bottom:.4em;}
+  .result-sub{font-size:.95rem; color:var(--ink-light); margin-bottom:1.6em;}
+  .result-desc{
+    text-align:left; font-size:1rem; line-height:2; padding:20px;
+    border-left:3px solid var(--red); background:rgba(255,255,255,.4); margin-bottom:1.6em;
+  }
+  .radar-wrap{margin:1.5em auto; width:240px; height:240px;}
+  .aux{font-size:.88rem; color:var(--ink-light); line-height:1.9; margin-bottom:2em; padding:0 10px;}
+  .result-btns .btn{margin:6px;}
+
+  /* ========== 游戏介绍 ========== */
+  .section-title{
+    font-size:1.6rem; letter-spacing:.16em; text-align:center; margin-bottom:.5em;
+  }
+  .section-sub{text-align:center; color:var(--ink-light); margin-bottom:2.4em; font-size:.95rem;}
+  .intro-block{
+    background:rgba(255,255,255,.4); border:1px solid rgba(43,43,43,.12);
+    padding:26px 28px; margin-bottom:24px; border-radius:2px;
+  }
+  .intro-block h3{font-size:1.2rem; letter-spacing:.1em; margin-bottom:.7em; color:var(--red);}
+  .intro-block p{font-size:.98rem; color:var(--ink); margin-bottom:.8em;}
+  .vol-list{list-style:none; margin-top:.6em;}
+  .vol-list li{
+    padding:10px 0 10px 18px; border-left:2px solid var(--gold);
+    margin-bottom:8px; font-size:.95rem;
+  }
+  .vol-list li strong{letter-spacing:.08em;}
+
+  .shot-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; margin-top:16px;}
+  .shot-placeholder{
+    aspect-ratio:16/9; border:1.5px dashed rgba(43,43,43,.35); border-radius:3px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:repeating-linear-gradient(45deg,rgba(255,255,255,.25),rgba(255,255,255,.25) 10px,rgba(239,231,214,.5) 10px,rgba(239,231,214,.5) 20px);
+    color:#8a7a68; font-size:.9rem; text-align:center; padding:14px;
+  }
+  .shot-placeholder small{display:block; margin-top:8px; font-size:.72rem; line-height:1.6; opacity:.85;}
+
+  /* ========== 科普 ========== */
+  .know-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin-bottom:36px;}
+  .know-card{
+    background:rgba(255,255,255,.45); border:1px solid rgba(43,43,43,.12);
+    padding:20px 22px; border-radius:2px; border-top:3px solid var(--chuanwen);
+  }
+  .know-card h3{font-size:1.08rem; letter-spacing:.06em; margin-bottom:.6em; color:var(--ink);}
+  .know-card p{font-size:.9rem; color:var(--ink-light); line-height:1.85;}
+
+  .mini-quiz{background:rgba(255,255,255,.4); border:1px solid rgba(43,43,43,.12); padding:26px; border-radius:2px;}
+  .mini-quiz h3{text-align:center; font-size:1.2rem; letter-spacing:.12em; margin-bottom:1.4em;}
+  .mq-item{margin-bottom:22px; padding-bottom:18px; border-bottom:1px dashed rgba(43,43,43,.15);}
+  .mq-item:last-child{border-bottom:none; margin-bottom:0;}
+  .mq-q{font-size:1rem; margin-bottom:.8em;}
+  .mq-opt{
+    display:block; width:100%; text-align:left; padding:10px 14px; margin-bottom:8px;
+    border:1px solid rgba(43,43,43,.2); background:rgba(255,255,255,.4);
+    font-family:inherit; font-size:.92rem; color:var(--ink); cursor:pointer; border-radius:2px; transition:.2s;
+  }
+  .mq-opt:hover{border-color:var(--red);}
+  .mq-opt.correct{border-color:var(--riyong); background:rgba(107,142,90,.14);}
+  .mq-opt.wrong{border-color:var(--red); background:rgba(163,51,51,.08);}
+  .mq-exp{font-size:.85rem; color:var(--ink-light); line-height:1.8; margin-top:.5em; display:none;}
+
+  footer{
+    text-align:center; padding:30px 20px; font-size:.8rem; color:#8a7a68;
+    border-top:1px solid rgba(43,43,43,.1); margin-top:40px;
+  }
+
+  @media(max-width:600px){
+    .hero h1{font-size:1.8rem;}
+    .nav-inner{padding:10px 14px;}
+    .nav nav a{padding:5px 10px; font-size:.88rem;}
+    main{padding:20px 14px 60px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand" onclick="showPage('home')">我在古代修礼记</div>
+    <nav>
+      <a id="nav-home" class="active" onclick="showPage('home')">首页</a>
+      <a id="nav-quiz" onclick="showPage('quiz')">开始测试</a>
+      <a id="nav-game" onclick="showPage('game')">游戏介绍</a>
+      <a id="nav-liji" onclick="showPage('liji')">礼记科普</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ================= 首页 ================= -->
+  <section id="page-home" class="page active">
+    <div class="hero">
+      <h1>五维礼心测试</h1>
+      <p class="sub">《我在古代修礼记》互动测试 · 测出你在礼学传承中最偏向哪一维</p>
+      <div class="daily" id="dailyQuote"></div>
+      <div>
+        <button class="btn red" onclick="startQuiz()">开始测试</button>
+      </div>
+      <p class="hint">从 40 道题库中随机抽取 10 道 · 约 2 分钟 · 凭第一直觉作答</p>
+    </div>
+
+    <div class="dim-cards">
+      <div class="dim-card" style="border-top-color:var(--dianzhang)">
+        <h3 style="color:var(--dianzhang)">典章</h3>
+        <p>庙堂之高，礼法之严，秩序之重。礼首先得“对”。</p>
+      </div>
+      <div class="dim-card" style="border-top-color:var(--riyong)">
+        <h3 style="color:var(--riyong)">日用</h3>
+        <p>起居之微，人情之常，烟火之实。礼得“能过”。</p>
+      </div>
+      <div class="dim-card" style="border-top-color:var(--jingcheng)">
+        <h3 style="color:var(--jingcheng)">敬诚</h3>
+        <p>虔心之笃，信守之坚，本真之纯。礼得“真”。</p>
+      </div>
+      <div class="dim-card" style="border-top-color:var(--renhe)">
+        <h3 style="color:var(--renhe)">仁和</h3>
+        <p>恻隐之温，万物之谐，共生之善。礼得“暖”。</p>
+      </div>
+      <div class="dim-card" style="border-top-color:var(--chuanwen)">
+        <h3 style="color:var(--chuanwen)">传文</h3>
+        <p>薪火之继，弦歌之续，不朽之承。礼得“留”。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 测试 ================= -->
+  <section id="page-quiz" class="page">
+    <div class="quiz-wrap">
+
+      <!-- 测试封面 -->
+      <div id="quiz-cover" class="quiz-cover">
+        <h2>礼心十问</h2>
+        <p>以下 10 道题从题库中随机抽取。<br>没有标准答案，选你第一反应最接近的那个。</p>
+        <button class="btn red" onclick="beginQuiz()">开始作答</button>
+      </div>
+
+      <!-- 答题区 -->
+      <div id="quiz-body" style="display:none;">
+        <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="q-num" id="qNum"></div>
+        <div class="question" id="questionText"></div>
+        <div id="optionsWrap"></div>
+      </div>
+
+      <!-- 计分动画 -->
+      <div id="quiz-calc" class="quiz-cover" style="display:none;">
+        <h2>正在展开竹简…</h2>
+        <p>你的礼心形状正在浮现</p>
+      </div>
+
+      <!-- 结果区 -->
+      <div id="quiz-result" style="display:none;">
+        <div class="result-type" id="resultType"></div>
+        <div class="result-sub" id="resultSub"></div>
+        <div class="result-desc" id="resultDesc"></div>
+        <div class="radar-wrap"><canvas id="radar" width="480" height="480" style="width:240px;height:240px;"></canvas></div>
+        <div class="aux" id="auxText"></div>
+        <div class="result-btns">
+          <button class="btn red" onclick="startQuiz()">再测一次</button>
+          <button class="btn" onclick="showPage('game')">看看游戏介绍</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= 游戏介绍 ================= -->
+  <section id="page-game" class="page">
+    <h2 class="section-title">《我在古代修礼记》</h2>
+    <p class="section-sub">一款以《礼记》千年生命史为线索的互动叙事游戏</p>
+
+    <div class="intro-block">
+      <h3>故事简介</h3>
+      <p>你是一名被《礼记》作业折磨到伏案小憩的现代学生。再次睁眼，后脑勺被硬物硌得生疼——你躺在两千多年前鲁国的土路上，脚边是一卷断裂的竹简。</p>
+      <p>从孔子杏坛讲学，到秦火焚书、二戴辑录，再到郑玄作注、礼入民间，你要亲历这部典籍的完整生命历程。每一次抉择，都会镌刻在简册之上，也会改变你五维礼心的形状。</p>
+    </div>
+
+    <div class="intro-block">
+      <h3>五卷主线</h3>
+      <ul class="vol-list">
+        <li><strong>第一卷 · 平天下</strong>｜大道之行。杏坛听讲，与子贡论大同。</li>
+        <li><strong>第二卷 · 治国</strong>｜为政以礼。随二戴走访乡野，辑录残简，定《礼记》之名。</li>
+        <li><strong>第三卷 · 齐家</strong>｜门内之义。观民间婚俗，辨《内则》繁简。</li>
+        <li><strong>第四卷 · 修身</strong>｜慎己诚敬。随郑玄作注，看经、俗、约如何一根三枝。</li>
+        <li><strong>第五卷 · 礼传千年</strong>｜修身向外，生生不息。礼从书斋走入市井、渡口、布庄。</li>
+      </ul>
+    </div>
+
+    <div class="intro-block">
+      <h3>五维数值系统</h3>
+      <p>游戏中的每一个选择，都会影响【典章】【日用】【敬诚】【仁和】【传文】五个维度。没有绝对的对错，只有你更偏向哪一种“礼心”。结局会根据你的五维形状而不同：庙堂儒宗、乡俗礼师、至诚君子、拘礼腐儒……全看你了。</p>
+    </div>
+
+    <div class="intro-block">
+      <h3>游戏截图</h3>
+      <p style="font-size:.88rem; color:var(--ink-light)">（以下为占位框。替换方法见页面底部说明。）</p>
+      <div class="shot-grid">
+        <div class="shot-placeholder">
+          游戏截图位置 1
+          <small>建议放：杏坛讲学场景</small>
+        </div>
+        <div class="shot-placeholder">
+          游戏截图位置 2
+          <small>建议放：乡宴让座抉择界面</small>
+        </div>
+        <div class="shot-placeholder">
+          游戏截图位置 3
+          <small>建议放：五维雷达图/结局页</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 礼记科普 ================= -->
+  <section id="page-liji" class="page">
+    <h2 class="section-title">《礼记》小科普</h2>
+    <p class="section-sub">读测试之前，先认识一下这部书</p>
+
+    <div class="know-grid">
+      <div class="know-card">
+        <h3>《礼记》是什么？</h3>
+        <p>儒家经典“十三经”之一，主要记录先秦至汉初儒家关于礼的论述、仪节与思想。我们今天通行的版本是戴圣选编的《小戴礼记》，共四十九篇。</p>
+      </div>
+      <div class="know-card" style="border-top-color:var(--dianzhang)">
+        <h3>大戴与小戴</h3>
+        <p>西汉戴德（大戴）辑录《大戴礼记》八十五篇，其侄戴圣（小戴）辑录《小戴礼记》四十九篇。后者流传更广，就是今天说的《礼记》。</p>
+      </div>
+      <div class="know-card" style="border-top-color:var(--jingcheng)">
+        <h3>郑玄作注</h3>
+        <p>东汉郑玄为《礼记》作注，兼采今古文，积十四年之功。郑注之后，《礼记》得以独立成经，与《周礼》《仪礼》并称“三礼”。</p>
+      </div>
+      <div class="know-card" style="border-top-color:var(--renhe)">
+        <h3>投壶：从射礼到游戏</h3>
+        <p>投壶源于周代射礼。射礼需广庭弓矢，宴饮间难以行射，遂以壶代侯、以矢代箭。后流入民间，成为年节闲时的娱乐，但“心平手稳、让长不争”的道理还在。</p>
+      </div>
+      <div class="know-card" style="border-top-color:var(--riyong)">
+        <h3>乡饮酒礼</h3>
+        <p>古代乡里定期举行的宴饮之礼，核心是“明长幼、和乡里”。仪式虽繁，其义在今天仍可转化：邻里互助、敬老睦邻。</p>
+      </div>
+      <div class="know-card" style="border-top-color:var(--chuanwen)">
+        <h3>“毋不敬”</h3>
+        <p>《礼记·曲礼》开篇即言：“毋不敬，俨若思，安定辞。”三个字，道尽礼的内核——不是繁文缛节，而是时时存一份敬。游戏里你做的每个选择，其实都在回答这三个字。</p>
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h3>礼记小问答</h3>
+      <div id="miniQuizWrap"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  《我在古代修礼记》· 五维礼心测试｜本测试为游戏叙事设计，不代表历史人物真实抉择
+</footer>
+
+<script>
+/* =========================================================
+   一、每日一礼（首页随机名言）
+   ========================================================= */
+const QUOTES = [
+  "“毋不敬，俨若思，安定辞。”——《礼记·曲礼》",
+  "“大道之行也，天下为公。”——《礼记·礼运》",
+  "“玉不琢，不成器；人不学，不知道。”——《礼记·学记》",
+  "“礼尚往来。往而不来，非礼也；来而不往，亦非礼也。”——《礼记·曲礼》",
+  "“博学之，审问之，慎思之，明辨之，笃行之。”——《礼记·中庸》",
+  "“君子慎其独也。”——《礼记·中庸》",
+  "“凡事预则立，不预则废。”——《礼记·中庸》",
+  "“学然后知不足，教然后知困。”——《礼记·学记》"
+];
+document.getElementById('dailyQuote').textContent =
+  "今日一礼：" + QUOTES[Math.floor(Math.random() * QUOTES.length)];
+
+/* =========================================================
+   二、页面切换
+   ========================================================= */
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav nav a').forEach(a => a.classList.remove('active'));
+  const nav = document.getElementById('nav-' + name);
+  if(nav) nav.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* =========================================================
+   三、题库（40 题，五维各 8 题）
+   每题三个选项，分别对应三个不同维度；homeDim 为该题所属维度
+   ========================================================= */
+const QUESTION_BANK = {
+  "典章": [
+    {q:"你穿越到鲁国，脚边半卷残简，第一反应是——", opts:[
+      {t:"先辨认竹简上的字，看它属于哪一篇、哪个版本。", d:"典章"},
+      {t:"先看看周围有没有人，问问这是哪一年、什么地方。", d:"日用"},
+      {t:"先摸摸竹简的材质，感受它被谁握过、为什么断在这里。", d:"敬诚"}
+    ]},
+    {q:"孔子讲“天下为公”，你心里想的是——", opts:[
+      {t:"我身边这些人，今天回去能不能对家人好一点？", d:"日用"},
+      {t:"这套理想若要落地，需要一套怎样的制度来支撑？", d:"典章"},
+      {t:"夫子说这话时，他自己信吗？他信到什么程度？", d:"敬诚"}
+    ]},
+    {q:"子贡问你“大同从何处下手”，你更可能说——", opts:[
+      {t:"先善待眼前一个人，再谈天下。", d:"仁和"},
+      {t:"先立规矩，再谈人心。", d:"典章"},
+      {t:"把今天说的记下来，日后有人会需要。", d:"传文"}
+    ]},
+    {q:"夜里抄录夫子言语，子贡说“礼在践行不在竹简”，你——", opts:[
+      {t:"抄。古本一字不可少，这是根。", d:"典章"},
+      {t:"放下笔，跟他去院子里实际做一遍。", d:"日用"},
+      {t:"抄，但每抄一句都在想：这句话我做到了没有。", d:"敬诚"}
+    ]},
+    {q:"乡宴上壮汉占了长者席位，你最先冒出的念头是——", opts:[
+      {t:"先给老者盛碗汤再说。", d:"仁和"},
+      {t:"这不合《曲礼》，得有人站出来说清楚。", d:"典章"},
+      {t:"先别动，看看这村里平时怎么待人。", d:"日用"}
+    ]},
+    {q:"残简上有脱字，你怎么处理——", opts:[
+      {t:"标注“脱文”，宁可空着也不妄改。", d:"典章"},
+      {t:"据上下文补上，让文句可读。", d:"传文"},
+      {t:"先补一版，但注明“据义补，未见他本”。", d:"敬诚"}
+    ]},
+    {q:"戴德主张“守古本寸字不改”，戴圣主张“礼要让人过好日子”，你倾向——", opts:[
+      {t:"古本是底线，改了就不是那部书。", d:"典章"},
+      {t:"百姓用不上，这书就死了。", d:"日用"},
+      {t:"两存其真，各归其位。", d:"传文"}
+    ]},
+    {q:"《内则》里“左佩纷帨、右佩箴管”，农家媳妇做不到，你——", opts:[
+      {t:"原文一字不改，这是古礼全貌。", d:"典章"},
+      {t:"删繁就简，留下核心就够了。", d:"日用"},
+      {t:"原文不动，另附一篇简本。", d:"传文"}
+    ]}
+  ],
+  "日用": [
+    {q:"礼对你来说，首先得——", opts:[
+      {t:"能过日子。", d:"日用"},
+      {t:"有规矩。", d:"典章"},
+      {t:"心里过得去。", d:"敬诚"}
+    ]},
+    {q:"你走进一个农家，最留意——", opts:[
+      {t:"他们怎么待客、怎么吃饭。", d:"日用"},
+      {t:"他们家里有没有家规条幅。", d:"典章"},
+      {t:"他们说话时眼睛看不看人。", d:"仁和"}
+    ]},
+    {q:"郑玄问“经在先还是日子在先”，你——", opts:[
+      {t:"日子在先。百姓先做，圣人后记。", d:"日用"},
+      {t:"经在先。圣人立纲，百姓有方向。", d:"典章"},
+      {t:"一根上的枝，分不开。", d:"传文"}
+    ]},
+    {q:"冬至投壶，你——", opts:[
+      {t:"先让长辈投，我在旁边看。", d:"仁和"},
+      {t:"投完把箭拾齐，中不中再说。", d:"日用"},
+      {t:"站正、心平、手稳。", d:"敬诚"}
+    ]},
+    {q:"渔夫叮嘱儿子“出门说一声、回来知会家里”，你想到——", opts:[
+      {t:"这就是“出必告，返必面”的活态传承。", d:"传文"},
+      {t:"礼不在跪拜，在父子一答一应之间。", d:"日用"},
+      {t:"这句话会一代代传下去，不靠书也断不了。", d:"敬诚"}
+    ]},
+    {q:"商行学徒背行规，你觉得——", opts:[
+      {t:"话术换了，敬人的本心没变。", d:"仁和"},
+      {t:"通俗行规让不识字的人也记得住。", d:"日用"},
+      {t:"纸张会换，信义的内核不断。", d:"传文"}
+    ]},
+    {q:"船工看水势再开船，你看到的是——", opts:[
+      {t:"手艺里藏着礼的传承。", d:"传文"},
+      {t:"劳作中践行规矩，比藏书更活。", d:"日用"},
+      {t:"沉静自持，就是“敬诚”。", d:"敬诚"}
+    ]},
+    {q:"如果只能保留一种传礼方式，你选——", opts:[
+      {t:"刻在石上的乡约。", d:"典章"},
+      {t:"长辈随口叮嘱、晚辈虚心应答。", d:"日用"},
+      {t:"一代代口耳相传的故事。", d:"传文"}
+    ]}
+  ],
+  "敬诚": [
+    {q:"没人看见的时候，你——", opts:[
+      {t:"还是按规矩来。", d:"敬诚"},
+      {t:"看情况，别太死板。", d:"日用"},
+      {t:"想想这么做对不对得起人。", d:"仁和"}
+    ]},
+    {q:"抄书时你想得最多的是——", opts:[
+      {t:"这句话我做到了没有。", d:"敬诚"},
+      {t:"别抄错了字。", d:"典章"},
+      {t:"后人读到时能不能看懂。", d:"传文"}
+    ]},
+    {q:"乡宴上你上前行礼，是因为——", opts:[
+      {t:"礼该如此，不能失序。", d:"典章"},
+      {t:"老者站在那里太可怜。", d:"仁和"},
+      {t:"我自己心里过不去。", d:"敬诚"}
+    ]},
+    {q:"郑玄写注，你看到的是——", opts:[
+      {t:"一个字的重量。", d:"敬诚"},
+      {t:"经与俗的脉络。", d:"传文"},
+      {t:"百姓日用的依据。", d:"日用"}
+    ]},
+    {q:"孔子说“礼以安人”，你记住的是——", opts:[
+      {t:"安人先安己心。", d:"敬诚"},
+      {t:"安人是秩序。", d:"典章"},
+      {t:"安人是让人被看见。", d:"仁和"}
+    ]},
+    {q:"你更怕哪种情况——", opts:[
+      {t:"礼变成表演。", d:"敬诚"},
+      {t:"礼变成枷锁。", d:"日用"},
+      {t:"礼断在某一代。", d:"传文"}
+    ]},
+    {q:"投壶时你更在意——", opts:[
+      {t:"心平手稳。", d:"敬诚"},
+      {t:"让长辈先。", d:"仁和"},
+      {t:"输赢无所谓，乐一乐。", d:"日用"}
+    ]},
+    {q:"若有人夸你“懂礼”，你希望是因为——", opts:[
+      {t:"你守得住分寸。", d:"典章"},
+      {t:"你待人暖。", d:"仁和"},
+      {t:"你说到做到。", d:"敬诚"}
+    ]}
+  ],
+  "仁和": [
+    {q:"乡宴上老者没座位，你——", opts:[
+      {t:"先盛碗汤递过去。", d:"仁和"},
+      {t:"请壮汉让座。", d:"典章"},
+      {t:"先看看再说。", d:"日用"}
+    ]},
+    {q:"你觉得礼的起点是——", opts:[
+      {t:"让人觉得自己配被敬。", d:"仁和"},
+      {t:"让人知道秩序。", d:"典章"},
+      {t:"让人心里安定。", d:"敬诚"}
+    ]},
+    {q:"残简补字时，你更在意——", opts:[
+      {t:"别妄改古意。", d:"典章"},
+      {t:"后人能不能读懂。", d:"传文"},
+      {t:"补字的人有没有私心。", d:"仁和"}
+    ]},
+    {q:"戴圣说“礼要让人过好日子”，你——", opts:[
+      {t:"点头，人过不好，礼是假的。", d:"仁和"},
+      {t:"摇头，古本不能动。", d:"典章"},
+      {t:"想想怎么两全。", d:"传文"}
+    ]},
+    {q:"你更愿意做——", opts:[
+      {t:"在乡间教孩子行礼的人。", d:"仁和"},
+      {t:"在书斋校书的人。", d:"典章"},
+      {t:"把礼写成故事传下去的人。", d:"传文"}
+    ]},
+    {q:"看到有人失礼，你第一反应——", opts:[
+      {t:"他是不是有难处。", d:"仁和"},
+      {t:"这不合规矩。", d:"典章"},
+      {t:"先记下来，回头再说。", d:"传文"}
+    ]},
+    {q:"你觉得“敬”是——", opts:[
+      {t:"把别人放在心上。", d:"仁和"},
+      {t:"守住分寸。", d:"典章"},
+      {t:"不欺暗室。", d:"敬诚"}
+    ]},
+    {q:"投壶时有人连投不中，你——", opts:[
+      {t:"把箭递过去，让他站正再投。", d:"仁和"},
+      {t:"按规矩来，投完拾箭。", d:"日用"},
+      {t:"安静看着，不打扰。", d:"敬诚"}
+    ]}
+  ],
+  "传文": [
+    {q:"你更怕——", opts:[
+      {t:"礼断在某一代。", d:"传文"},
+      {t:"礼变成空壳。", d:"敬诚"},
+      {t:"礼变成门槛。", d:"日用"}
+    ]},
+    {q:"抄书时你想到——", opts:[
+      {t:"不抄就散了。", d:"传文"},
+      {t:"别抄错。", d:"典章"},
+      {t:"抄了要做到。", d:"敬诚"}
+    ]},
+    {q:"残简有异文，你——", opts:[
+      {t:"另立一篇，并存。", d:"传文"},
+      {t:"附注于后，守正篇。", d:"典章"},
+      {t:"先补一版，注明来源。", d:"敬诚"}
+    ]},
+    {q:"书名你更倾向——", opts:[
+      {t:"《礼记》，不标人，公之于天下。", d:"传文"},
+      {t:"《小戴礼》，标明学派。", d:"典章"},
+      {t:"《礼藏人间》，藏在人心里。", d:"仁和"}
+    ]},
+    {q:"渔夫教儿子，你看到的是——", opts:[
+      {t:"礼在口耳相传中生生不息。", d:"传文"},
+      {t:"礼在日用处。", d:"日用"},
+      {t:"礼在父子的敬里。", d:"敬诚"}
+    ]},
+    {q:"商行手册翻新，你想到——", opts:[
+      {t:"纸张会换，内核不断。", d:"传文"},
+      {t:"行规让礼传遍市井。", d:"日用"},
+      {t:"待客之道源自古礼。", d:"仁和"}
+    ]},
+    {q:"船工把手艺传给学徒，你看到——", opts:[
+      {t:"手艺也是传礼的渠道。", d:"传文"},
+      {t:"劳作即践行。", d:"日用"},
+      {t:"沉静自持是敬。", d:"敬诚"}
+    ]},
+    {q:"数字化时代，你更愿意——", opts:[
+      {t:"做经典的研读人。", d:"典章"},
+      {t:"做家风的践行者。", d:"日用"},
+      {t:"做乡风的传播人。", d:"传文"}
+    ]}
+  ]
+};
+
+/* =========================================================
+   四、五维结果文案
+   ========================================================= */
+const DIMS = ["典章","日用","敬诚","仁和","传文"];
+const DIM_COLORS = {
+  "典章":"#8b5e3c", "日用":"#6b8e5a", "敬诚":"#c9a227", "仁和":"#b5563a", "传文":"#4a6fa5"
+};
+const RESULTS = {
+  "典章": {
+    type:"典章型 · 守经者", sub:"礼心偏向【典章】——庙堂之高，礼法之严，秩序之重",
+    desc:"“你相信礼首先得‘对’。一字不可妄改，一序不可错乱。你可能是那个在乡宴上站出来说‘上首该让给长者’的人。你的礼心是骨架——没有你，礼会散成一地风俗。”"
+  },
+  "日用": {
+    type:"日用型 · 烟火者", sub:"礼心偏向【日用】——起居之微，人情之常，烟火之实",
+    desc:"“你相信礼得‘能过’。百姓做不到的礼，写在竹简上也是死的。你可能是那个先给老者盛一碗汤的人。你的礼心是血肉——没有你，礼会变成一座没人进的庙。”"
+  },
+  "敬诚": {
+    type:"敬诚型 · 内省者", sub:"礼心偏向【敬诚】——虔心之笃，信守之坚，本真之纯",
+    desc:"“你相信礼得‘真’。人前做到不算，独处时还守得住才算。你可能是那个抄书时每抄一句都问自己‘我做到了没有’的人。你的礼心是根——没有你，礼会变成表演。”"
+  },
+  "仁和": {
+    type:"仁和型 · 推己者", sub:"礼心偏向【仁和】——恻隐之温，万物之谐，共生之善",
+    desc:"“你相信礼得‘暖’。礼的起点是让人觉得自己配被敬，然后才会去敬别人。你可能是那个不急着讲道理、先递一碗汤的人。你的礼心是温度——没有你，礼会变成冷冰冰的条文。”"
+  },
+  "传文": {
+    type:"传文型 · 续火者", sub:"礼心偏向【传文】——薪火之继，弦歌之续，不朽之承",
+    desc:"“你相信礼得‘留’。不记下来就散了，不留下去就断了。你可能是那个在油灯下一笔一笔抄、又想着‘错了再改’的人。你的礼心是链条——没有你，礼会断在某一代人手里。”"
+  }
+};
+
+/* =========================================================
+   五、测试状态与流程
+   ========================================================= */
+let quizQuestions = [];   // 本次抽到的 10 题
+let current = 0;
+let scores = {};
+let homeHits = {};        // 本维度题选中本维度选项的次数（用于平局判定）
+let answers = [];         // 每题所选维度
+
+function shuffle(arr){
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function pickQuestions(){
+  const picked = [];
+  DIMS.forEach(dim => {
+    const pool = shuffle([...QUESTION_BANK[dim]]);
+    pool.slice(0, 2).forEach(q => {
+      picked.push({ ...q, homeDim: dim });
+    });
+  });
+  return shuffle(picked);
+}
+
+function startQuiz(){
+  showPage('quiz');
+  document.getElementById('quiz-cover').style.display = 'block';
+  document.getElementById('quiz-body').style.display = 'none';
+  document.getElementById('quiz-calc').style.display = 'none';
+  document.getElementById('quiz-result').style.display = 'none';
+}
+
+function beginQuiz(){
+  quizQuestions = pickQuestions();
+  current = 0;
+  scores = {}; homeHits = {}; answers = [];
+  DIMS.forEach(d => { scores[d] = 0; homeHits[d] = 0; });
+
+  document.getElementById('quiz-cover').style.display = 'none';
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-body').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = quizQuestions[current];
+  document.getElementById('qNum').textContent = `第 ${current + 1} / ${quizQuestions.length} 题`;
+  document.getElementById('progressBar').style.width = `${(current / quizQuestions.length) * 100}%`;
+  document.getElementById('questionText').textContent = q.q;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  const keys = ['A','B','C'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="key">${keys[i]}.</span>${opt.t}`;
+    btn.onclick = () => choose(opt.d);
+    wrap.appendChild(btn);
+  });
+}
+
+function choose(dim){
+  scores[dim]++;
+  answers.push(dim);
+  if(dim === quizQuestions[current].homeDim) homeHits[dim]++;
+
+  current++;
+  if(current < quizQuestions.length){
+    renderQuestion();
+  } else {
+    document.getElementById('progressBar').style.width = '100%';
+    document.getElementById('quiz-body').style.display = 'none';
+    document.getElementById('quiz-calc').style.display = 'block';
+    setTimeout(showResult, 1400);
+  }
+}
+
+function showResult(){
+  document.getElementById('quiz-calc').style.display = 'none';
+  document.getElementById('quiz-result').style.display = 'block';
+
+  // 找最高分
+  let max = Math.max(...DIMS.map(d => scores[d]));
+  let tops = DIMS.filter(d => scores[d] === max);
+
+  // 平局：本维度题命中数高者胜；再平局按固定顺序
+  let winner = tops[0];
+  if(tops.length > 1){
+    tops.forEach(d => {
+      if(homeHits[d] > homeHits[winner]) winner = d;
+    });
+  }
+
+  const r = RESULTS[winner];
+  document.getElementById('resultType').textContent = r.type;
+  document.getElementById('resultType').style.color = DIM_COLORS[winner];
+  document.getElementById('resultSub').textContent = r.sub;
+  document.getElementById('resultDesc').textContent = r.desc;
+  document.getElementById('resultDesc').style.borderLeftColor = DIM_COLORS[winner];
+
+  // 辅维
+  let second = null, secondScore = -1;
+  DIMS.forEach(d => {
+    if(d !== winner && scores[d] > secondScore){ secondScore = scores[d]; second = d; }
+  });
+  document.getElementById('auxText').innerHTML =
+    `你的辅维是【<span style="color:${DIM_COLORS[second]};font-weight:bold">${second}</span>】。` +
+    `在剧本中，当你面临“戴德 vs 戴圣”的抉择时，你的辅维会悄悄拉你一把——留意它，它可能是你礼心形状里最有趣的那道边。`;
+
+  drawRadar(scores, DIM_COLORS[winner]);
+}
+
+/* =========================================================
+   六、雷达图
+   ========================================================= */
+function drawRadar(scores, mainColor){
+  const canvas = document.getElementById('radar');
+  const ctx = canvas.getContext('2d');
+  const W = 480, H = 480, cx = W/2, cy = H/2, R = 160;
+  ctx.clearRect(0, 0, W, H);
+
+  const n = DIMS.length;
+  const maxScore = Math.max(...DIMS.map(d => scores[d]), 1);
+
+  // 网格
+  ctx.strokeStyle = 'rgba(43,43,43,.15)';
+  ctx.lineWidth = 1;
+  for(let ring = 1; ring <= 4; ring++){
+    ctx.beginPath();
+    for(let i = 0; i <= n; i++){
+      const angle = -Math.PI/2 + (i % n) * (2 * Math.PI / n);
+      const rr = R * ring / 4;
+      const x = cx + rr * Math.cos(angle);
+      const y = cy + rr * Math.sin(angle);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  // 轴线
+  for(let i = 0; i < n; i++){
+    const angle = -Math.PI/2 + i * (2 * Math.PI / n);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R * Math.cos(angle), cy + R * Math.sin(angle));
+    ctx.stroke();
+  }
+
+  // 数据多边形
+  ctx.beginPath();
+  for(let i = 0; i <= n; i++){
+    const idx = i % n;
+    const angle = -Math.PI/2 + idx * (2 * Math.PI / n);
+    const ratio = Math.max(scores[DIMS[idx]] / maxScore, 0.08);
+    const rr = R * ratio;
+    const x = cx + rr * Math.cos(angle);
+    const y = cy + rr * Math.sin(angle);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = mainColor + '55';
+  ctx.fill();
+  ctx.strokeStyle = mainColor;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 顶点
+  for(let i = 0; i < n; i++){
+    const angle = -Math.PI/2 + i * (2 * Math.PI / n);
+    const ratio = Math.max(scores[DIMS[i]] / maxScore, 0.08);
+    const rr = R * ratio;
+    const x = cx + rr * Math.cos(angle);
+    const y = cy + rr * Math.sin(angle);
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = DIM_COLORS[DIMS[i]];
+    ctx.fill();
+  }
+
+  // 标签
+  ctx.font = '24px KaiTi, STKaiti, serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  for(let i = 0; i < n; i++){
+    const angle = -Math.PI/2 + i * (2 * Math.PI / n);
+    const lx = cx + (R + 34) * Math.cos(angle);
+    const ly = cy + (R + 34) * Math.sin(angle);
+    ctx.fillStyle = DIM_COLORS[DIMS[i]];
+    ctx.fillText(DIMS[i], lx, ly);
+  }
+}
+
+/* =========================================================
+   七、礼记小问答
+   ========================================================= */
+const MINI_QUIZ = [
+  {
+    q:"今天通行的《礼记》是哪个版本？",
+    opts:["《大戴礼记》，戴德辑录","《小戴礼记》，戴圣辑录","《周礼》，周公所作"],
+    answer:1,
+    exp:"今天说的《礼记》是戴圣选编的《小戴礼记》，共四十九篇。戴德的版本叫《大戴礼记》，篇目更多，很多已经散佚。"
+  },
+  {
+    q:"“毋不敬，俨若思，安定辞”出自哪一篇？",
+    opts:["《礼运》","《曲礼》","《学记》"],
+    answer:1,
+    exp:"出自《礼记·曲礼》开篇。“毋不敬”三个字，是整部《礼记》的入口——礼的内核不是繁文缛节，而是时时存一份敬。"
+  },
+  {
+    q:"投壶这项活动最初来源于什么？",
+    opts:["民间宴饮游戏","周代射礼","祭祀仪式"],
+    answer:1,
+    exp:"投壶源于周代射礼。射礼需要广庭弓矢，宴饮间难以行射，于是以壶代靶、以矢代箭，后来才流入民间成为娱乐。"
+  }
+];
+
+function renderMiniQuiz(){
+  const wrap = document.getElementById('miniQuizWrap');
+  wrap.innerHTML = '';
+  MINI_QUIZ.forEach((item, qi) => {
+    const div = document.createElement('div');
+    div.className = 'mq-item';
+
+    const qEl = document.createElement('div');
+    qEl.className = 'mq-q';
+    qEl.textContent = `${qi + 1}. ${item.q}`;
+    div.appendChild(qEl);
+
+    const expEl = document.createElement('div');
+    expEl.className = 'mq-exp';
+    expEl.textContent = item.exp;
+
+    item.opts.forEach((opt, oi) => {
+      const btn = document.createElement('button');
+      btn.className = 'mq-opt';
+      btn.textContent = opt;
+      btn.onclick = () => {
+        // 已答过则忽略
+        if(div.dataset.done) return;
+        div.dataset.done = '1';
+        if(oi === item.answer){
+          btn.classList.add('correct');
+        } else {
+          btn.classList.add('wrong');
+          // 标出正确项
+          div.querySelectorAll('.mq-opt')[item.answer].classList.add('correct');
+        }
+        expEl.style.display = 'block';
+      };
+      div.appendChild(btn);
+    });
+
+    div.appendChild(expEl);
+    wrap.appendChild(div);
+  });
+}
+renderMiniQuiz();
+</script>
+</body>
+</html>
